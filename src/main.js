@@ -17,6 +17,8 @@ class App{
         event.preventDefault()
 
         const repoInput = this.inputEL.value
+
+        this.loading()
         
         if(repoInput === ''){
             return
@@ -30,10 +32,22 @@ class App{
                 avatar_url,
                 html_url
             })
-            this.inputEL.value = ''
             this.render()
         } catch (error) {
-            alert('Repositorio não existe!!')
+            alert('Repositório não existe!!')
+        }
+        this.inputEL.value = ''
+        this.loading(false)
+    }
+
+    loading (loading = true){
+        if(loading === true){
+            let loadingEl = document.createElement('strong')
+            loadingEl.setAttribute('id','loading')
+            loadingEl.appendChild(document.createTextNode('Carregando...'))
+            this.formEl.appendChild(loadingEl)
+        }else{
+            document.querySelector('strong#loading').remove()
         }
     }
 
