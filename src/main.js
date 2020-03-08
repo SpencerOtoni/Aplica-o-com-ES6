@@ -1,7 +1,10 @@
+const api = require('./api')
+
 class App{
     constructor(){
         this.repositorios = [],
         this.formEl = document.querySelector('form'),
+        this.inputEL = document.querySelector("input[name=repository]")
         this.ulEl = document.querySelector('ul')
         this.registerHandlers()
     } 
@@ -10,17 +13,28 @@ class App{
         this.formEl.onsubmit = event => this.addRepository(event)
     }
 
-    addRepository(event){
+   async addRepository(event){
         event.preventDefault()
 
-        this.repositorios.push({
-            name: "rocketseat.com.br",
-            description: "Tire a sua ideia do papel e dê vida à sua startup.",
-            avatar_url: "https://avatars0.githubusercontent.com/u/28929274?v=4",
-            html_url:"http://github.com/rocketseat"
-        })
-
-        this.render()
+        const repoInput = this.inputEL.value
+        
+        if(repoInput === ''){
+            return
+        }
+        try {
+            const response = await api.get(`/repos/${repoInput}`) //react-community/react-navigation
+            const {name, description, html_url, owner:{avatar_url}} = response.data
+            this.repositorios.push({
+                name,
+                description,
+                avatar_url,
+                html_url
+            })
+            this.inputEL.value = ''
+            this.render()
+        } catch (error) {
+            alert('Repositorio não existe!!')
+        }
     }
 
     render(){
@@ -37,6 +51,7 @@ class App{
 
             let aEl = document.createElement('a')
             aEl.setAttribute('target', '_blank')
+            aEl.setAttribute('href',element.html_url)
             aEl.appendChild(document.createTextNode('Acessar'))
 
             let liEl = document.createElement('li')
